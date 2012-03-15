@@ -27,4 +27,8 @@ RSpec.configure do |config|
   def java_file(path)
     java.io.File.new path.to_s
   end
+
+  config.after(:each) do
+    @tmpdir.rmtree if @tmpdir
+  end
 end
