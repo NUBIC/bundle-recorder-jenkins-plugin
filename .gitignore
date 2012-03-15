@@ -1,1 +1,4 @@
 work
+Gemfile.lock
+spec/tmp
+exploded_dependencies

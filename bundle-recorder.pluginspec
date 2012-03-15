@@ -1,3 +1,4 @@
+require 'jenkins/plugin/specification'
 
 Jenkins::Plugin::Specification.new do |plugin|
   plugin.name = "bundle-recorder"
