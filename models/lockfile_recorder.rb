@@ -8,8 +8,11 @@ class LockfileRecorder < Jenkins::Tasks::Publisher
       archive_target = archive_dir(build).child('Gemfile.lock')
       listener.info("Recording bundle to #{archive_target}.")
       lockfile.copyTo(archive_target)
+
+      build.native.add_action(BundledGems.new(archive_target))
     else
       listener.error("No bundle lock present to record. Was expecting #{lockfile}.")
+      build.native.result = Java.hudson.model.Result::FAILURE
     end
   end
 
@@ -22,4 +25,5 @@ class LockfileRecorder < Jenkins::Tasks::Publisher
     # TODO: allow this to be configured
     build.native.workspace.child('Gemfile.lock')
   end
+  private :built_lockfile
 end

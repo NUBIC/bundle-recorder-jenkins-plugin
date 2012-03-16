@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 require 'models/lockfile_recorder'
+require 'models/bundled_gems'
 
 describe LockfileRecorder do
   let(:native_build) { double('java build') }
@@ -15,7 +16,9 @@ describe LockfileRecorder do
   before do
     native_build.stub!(:workspace).and_return(file_path workspace)
     native_build.stub!(:artifacts_dir).and_return(java_file artifacts_dir)
+    native_build.stub!(:result=).and_return(java_file artifacts_dir)
     native_build.stub!(:buildEnvironments).and_return(java.util.ArrayList.new)
+    native_build.stub!(:add_action)
 
     [:debug, :info, :warn, :error, :fatal, :unknown].each { |level| listener.stub!(level) }
   end
@@ -34,6 +37,8 @@ describe LockfileRecorder do
       ].join("\n")
     }
 
+    let(:expected_archive_file) { (artifacts_dir + 'bundle-recorder' + 'Gemfile.lock') }
+
     before do
       (workspace + 'Gemfile.lock').open('w') { |f| f.write source }
     end
@@ -41,12 +46,18 @@ describe LockfileRecorder do
     it 'copies Gemfile.lock to a subdirectory of the artifacts directory' do
       perform
 
-      (artifacts_dir + 'bundle-recorder' + 'Gemfile.lock').read.should == source
+      expected_archive_file.read.should == source
     end
 
     it 'notes what it is doing in the log' do
       listener.should_receive(:info).
-        with("Recording bundle to #{artifacts_dir + 'bundle-recorder/Gemfile.lock'}.")
+        with("Recording bundle to #{expected_archive_file}.")
+
+      perform
+    end
+
+    it 'registers the action' do
+      native_build.should_receive(:add_action)
 
       perform
     end
@@ -56,6 +67,12 @@ describe LockfileRecorder do
     it 'records an error' do
       listener.should_receive(:error).
         with("No bundle lock present to record. Was expecting #{workspace + 'Gemfile.lock'}.")
+
+      perform
+    end
+
+    it 'stops the build' do
+      native_build.should_receive(:result=).with(Java.hudson.model.Result::FAILURE)
 
       perform
     end
