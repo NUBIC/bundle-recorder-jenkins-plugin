@@ -9,7 +9,7 @@ class LockfileRecorder < Jenkins::Tasks::Publisher
       listener.info("Recording bundle to #{archive_target}.")
       lockfile.copyTo(archive_target)
 
-      build.native.add_action(BundledGems.new(archive_target))
+      build.native.add_action(Jenkins.plugin.export(BundledGems.new(archive_target)))
     else
       listener.error("No bundle lock present to record. Was expecting #{lockfile}.")
       build.native.result = Java.hudson.model.Result::FAILURE

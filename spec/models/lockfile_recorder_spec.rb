@@ -14,6 +14,10 @@ describe LockfileRecorder do
   subject { LockfileRecorder.new }
 
   before do
+    plugin = stub('plugin')
+    Jenkins.stub!(:plugin).and_return(plugin)
+    plugin.stub!(:export)
+
     native_build.stub!(:workspace).and_return(file_path workspace)
     native_build.stub!(:artifacts_dir).and_return(java_file artifacts_dir)
     native_build.stub!(:result=).and_return(java_file artifacts_dir)

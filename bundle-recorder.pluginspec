@@ -22,5 +22,5 @@ Jenkins::Plugin::Specification.new do |plugin|
   plugin.uses_repository :github => 'NUBIC/jenkins-bundle-recorder'
 
   # This is a required dependency for every ruby plugin.
-  plugin.depends_on 'ruby-runtime', '0.4'
+  plugin.depends_on 'ruby-runtime', '0.9'
 end

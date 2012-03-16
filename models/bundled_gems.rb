@@ -1,16 +1,9 @@
 class BundledGems
-  include Java.hudson.model.Action
-  include Jenkins::Model
+  include Jenkins::Model::Action
 
   display_name 'Bundled Gems'
-
-  def url_name
-    'bundledGems'
-  end
-
-  def icon_file_name
-    'fingerprint.png'
-  end
+  url_path 'bundled_gems'
+  icon 'fingerprint.png'
 
   attr_accessor :archived_lockfile
 
@@ -21,13 +14,8 @@ class BundledGems
   end
 end
 
-# TODO: this isn't being used, I don't think (at least, there's
-# behavior difference whether it is present or not). It was added as a
-# stab at fixing the serialization problem. I'm leaving it here as a
-# reminder until I figure out an actual solution.
 class BundledGemsProxy
-  include Jenkins::Plugin::Proxy
-  # include Jenkins::Plugin::Proxies::Action
+  include Jenkins::Plugin::Proxies::Action
 
   proxy_for BundledGems
 end
